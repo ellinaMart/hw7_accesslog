@@ -23,6 +23,7 @@ dict_method = defaultdict(
 dict_ip = defaultdict(
     lambda: {"GET": 0, "POST": 0, "PUT": 0, "DELETE" : 0, "HEAD": 0}
 )
+ips = []
 
 with open(args.file) as file:
     idx = 0
@@ -31,11 +32,10 @@ with open(args.file) as file:
         #     break
 
 #109.169.248.247 - - [12/Dec/2015:18:25:11 +0100] "GET /administrator/ HTTP/1.1" 200 4263 "-" "Mozilla/5.0 (Windows NT 6.0; rv:34.0) Gecko/20100101 Firefox/34.0" 7269
-
         ip_match = re.search(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}",line)
         if ip_match is not None:
             ip = ip_match.group()
-            #import pdb; pdb.set_trace()
+            ips.append(ip)
             #dict_ip[0]["ip"] = ip
             #dict_ip[0]["count"] += 1
         method = re.search(r"\] \"(POST|GET|PUT|DELETE|HEAD)",line)
@@ -57,17 +57,15 @@ with open(args.file) as file:
 SUM = dict_method[0]['GET'] + dict_method[0]['POST'] + dict_method[0]['PUT'] + dict_method[0]['DELETE'] + dict_method[0]['HEAD']
 cnt_ip = Counter()
 
-print(json.dumps(dict_method, indent=4))
-print('SUM:',SUM)
 #print(json.dumps(dict_ip,indent=4))
 with open('data.json', 'w', encoding='utf-8') as f:
     json.dump(dict_ip, f, ensure_ascii=False, indent=4)
 
-#max = dict_ip[0]
-keys=[]
-for key in dict_ip:
-    keys.append(key)
-import pdb;pdb.set_trace()
+print(json.dumps(dict_method, indent=4))
+print('SUM of requests:', SUM)
+print("Most popular ips are:", Counter(ips).most_common(3))
+#import pdb;pdb.set_trace()
+
 
 
 
